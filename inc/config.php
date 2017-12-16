@@ -8,38 +8,9 @@
 
 define('ROOT_PATH', dirname(__DIR__));
 // 本地环境
-$localIp = '192.168.138.1';
+$localIp = '127.0.0.1';
 // 线上环境
-$onlineIp = '103.51.145.13';
-
-$mongo = array(
-    'DEFAULT' => array(
-        'uri' => 'mongodb://' . $localIp . ':27017',
-        'dbName' => 'mongo_tv_dm_zy',
-        'options' => array(
-            'username' => 'Jelly',
-            'password' => 'cookies',
-        )
-    ),
-    'LOCAL' => array(
-        'uri' => 'mongodb://' . $localIp,
-        'dbName' => 'jelly_db'
-    ),
-    'ONLINE' => array(
-        'uri' => 'mongodb://' . $onlineIp,
-        'dbName' => 'jelly_db'
-    ),
-    // 22
-    'TEST' => array(
-        'uri' => 'mongodb://172.16.0.227:27017,172.16.0.227:27018,172.16.0.227:27019',
-        'dbName' => 'mongo_tv_dm_zy',
-        'replicaSet' => 'ys_test',
-        'options' => array(
-            'username' => 'yingshi_test',
-            'password' => '0lvImtC4xxhng',
-        )
-    )
-);
+$onlineIp = '144.48.9.54';
 
 $mysql = array(
     'DEFAULT' => array(
@@ -70,12 +41,12 @@ $mysql = array(
 
 $redis = array(
     'DEFAULT' => array(
-        'host' => $onlineIp,
+        'host' => $localIp,
         'port' => 6379,
         'auth' => 'jelly_tec'
     ),
     'LOCAL' => array(
-        'host' => $onlineIp,
+        'host' => $localIp,
         'port' => 6379,
         'auth' => 'jelly_tec'
     ),
@@ -113,7 +84,6 @@ $smarty = array(
 );
 
 $CFG = array(
-    'mongo' => $mongo,
     'mysql' => $mysql,
     'redis' => $redis,
     'cache' => $cache,

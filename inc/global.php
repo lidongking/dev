@@ -21,12 +21,9 @@ if ('PRODUCT' !== ENVIRONMENT)
 {
     ini_set('display_errors', 'on');
     error_reporting(E_ALL);
-    include_once dirname(__FILE__) . '/config.php';
 }
-else
-{
-    include_once dirname(__FILE__) . '/config_online.php';
-}
+
+include_once dirname(__FILE__) . '/config.php';
 
 // PHPQuery
 // include_once ROOT_PATH . '/vendor/phpQuery/phpQuery.php';
