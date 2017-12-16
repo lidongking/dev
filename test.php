@@ -6,20 +6,11 @@
  * 修改日期：2017/6/19
  */
 
-
-echo json_encode('<br>dd 对的ddd分担点<br>');
-exit;
-
-use \Xiaotu\Cache\MongoDB;
 header('Content-Type:text/html;charset=UTF-8');
 ini_set('display_errors', 'on');
 error_reporting(E_ALL);
 include_once dirname(__FILE__) . '/inc/config.php';
 include_once dirname(__FILE__) . '/libs/xiaotu/autoload.php';
-
-$mongo = MongoDB::getInstance('TEST');
-$res = $mongo->insert('test_test', array('title' => '标题'));
-var_dump($res);
 
 $db = \Xiaotu\DataBase\MySQL::getInstance('');
 $db->table('test')->select()->where('id=:id', array('id' => 1))->find();
