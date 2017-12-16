@@ -12,7 +12,7 @@ error_reporting(E_ALL);
 include_once dirname(__FILE__) . '/inc/config.php';
 include_once dirname(__FILE__) . '/libs/xiaotu/autoload.php';
 
-$db = \Xiaotu\DataBase\MySQL::getInstance('');
+$db = \Xiaotu\DataBase\MySQL::getInstance();
 $db->table('test')->select()->where('id=:id', array('id' => 1))->find();
 
 $db->table('test')->update(array('title' => 'new title updated'))->where('title=:title', array('title' => 'test'))->execute();
