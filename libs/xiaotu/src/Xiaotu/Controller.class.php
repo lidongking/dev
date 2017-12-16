@@ -9,6 +9,7 @@
 namespace Xiaotu;
 
 use Xiaotu\DataBase\MySQL;
+use Xiaotu\Cache\Redis;
 use \Smarty;
 
 class Controller extends Base
@@ -35,9 +36,7 @@ class Controller extends Base
         //$smarty->force_compile = true;
 
         // redis
-        $redis = new \Redis();
-        $redis->connect($CFG['redis']['DEFAULT']['host'], $CFG['redis']['DEFAULT']['port']);
-        $redis->auth($CFG['redis']['DEFAULT']['auth']);
+        $redis = Redis::getInstance();
 
         $this->smarty = $smarty;
         $this->redis = $redis;
