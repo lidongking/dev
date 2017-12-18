@@ -8,6 +8,7 @@
 
 namespace App\Controller;
 
+use App\Model\Test;
 use Xiaotu\Controller;
 
 class Home extends Controller
@@ -185,6 +186,13 @@ class Home extends Controller
             )
         );
         $this->display('home/hello.html', $data);
+    }
+
+    public function testAction()
+    {
+        $test = Test::getInstance();
+        $res = $test->get();
+        var_dump($res);
     }
 }
 
