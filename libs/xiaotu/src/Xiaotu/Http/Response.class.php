@@ -12,47 +12,52 @@ use Xiaotu\Base;
 
 class Response extends Base
 {
-    private static $httpStatus = array(
-        100 => "HTTP/1.1 100 Continue",
-        101 => "HTTP/1.1 101 Switching Protocols",
-        200 => "HTTP/1.1 200 OK",
-        201 => "HTTP/1.1 201 Created",
-        202 => "HTTP/1.1 202 Accepted",
-        203 => "HTTP/1.1 203 Non-Authoritative Information",
-        204 => "HTTP/1.1 204 No Content",
-        205 => "HTTP/1.1 205 Reset Content",
-        206 => "HTTP/1.1 206 Partial Content",
-        300 => "HTTP/1.1 300 Multiple Choices",
-        301 => "HTTP/1.1 301 Moved Permanently",
-        302 => "HTTP/1.1 302 Found",
-        303 => "HTTP/1.1 303 See Other",
-        304 => "HTTP/1.1 304 Not Modified",
-        305 => "HTTP/1.1 305 Use Proxy",
-        307 => "HTTP/1.1 307 Temporary Redirect",
-        400 => "HTTP/1.1 400 Bad Request",
-        401 => "HTTP/1.1 401 Unauthorized",
-        402 => "HTTP/1.1 402 Payment Required",
-        403 => "HTTP/1.1 403 Forbidden",
-        404 => "HTTP/1.1 404 Not Found",
-        405 => "HTTP/1.1 405 Method Not Allowed",
-        406 => "HTTP/1.1 406 Not Acceptable",
-        407 => "HTTP/1.1 407 Proxy Authentication Required",
-        408 => "HTTP/1.1 408 Request Time-out",
-        409 => "HTTP/1.1 409 Conflict",
-        410 => "HTTP/1.1 410 Gone",
-        411 => "HTTP/1.1 411 Length Required",
-        412 => "HTTP/1.1 412 Precondition Failed",
-        413 => "HTTP/1.1 413 Request Entity Too Large",
-        414 => "HTTP/1.1 414 Request-URI Too Large",
-        415 => "HTTP/1.1 415 Unsupported Media Type",
-        416 => "HTTP/1.1 416 Requested range not satisfiable",
-        417 => "HTTP/1.1 417 Expectation Failed",
-        500 => "HTTP/1.1 500 Internal Server Error",
-        501 => "HTTP/1.1 501 Not Implemented",
-        502 => "HTTP/1.1 502 Bad Gateway",
-        503 => "HTTP/1.1 503 Service Unavailable",
-        504 => "HTTP/1.1 504 Gateway Time-out"
+    private static $_httpCode = array(
+        100 => 'Continue',
+        101 => 'Switching Protocols',
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+        300 => 'Multiple Choices',
+        301 => 'Moved Permanently',
+        302 => 'Found',
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        307 => 'Temporary Redirect',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported'
     );
+
+    private $_charset;
+
+    const CHARSET = "UTF-8";
 
     private static $mimeTypes = array(
         'chm' => 'application/octet-stream',
@@ -83,51 +88,135 @@ class Response extends Base
         'json' => "application/json"
     );
 
-    /**
-     * 功    能：输出http状态码和信息
-     * 修改日期：2017-4-15
-     *
-     * @param int $code http状态码
-     * @param string $msg 输出信息
-     *
-     * @return null 无返回输出信息
-     */
-    public static function status($code, $msg)
+    private function _parseXml($msg)
     {
-        header(self::$httpStatus[$code]);
-        $msg = '<h1>' . self::$httpStatus[$code] . '</h1><hr />' . $msg;
-        self::output($msg);
+        $result = '';
+        if (is_array($msg))
+        {
+            foreach ($msg as $key => $val)
+            {
+                $tag = is_int($key) ? 'item' : $key;
+                $result .= '<' . $tag . '>' . $this->_parseXml($val) . '</' . $tag . '>';
+            }
+        }
+        else
+        {
+            $result = preg_match("/^[^<>]+$/is", $msg) ? $msg : '<![CDATA[' . $msg . ']]>';
+        }
+
+        return $result;
     }
 
-    /**
-     * 功    能：输出具有mime类型的数据
-     * 修改日期：2017-4-15
-     *
-     * @param string|array $stream 信息
-     * @param string $type 输出类型
-     * @param string $charset 编码
-     *
-     * @return null 无返回，直接输出信息
-     */
-    public static function output($stream, $type = 'html', $charset = 'UTF-8')
+    public function setCharset($charset = null)
     {
-        header('Access-Control-Allow-Origin: *');
-        //header('Access-Control-Allow-Headers: x-requested-with,content-type');
-        $contentType = self::getContentType($type);
-        !$contentType ? : header("Content-Type: {$contentType};charset=$charset");
-        echo $stream;
+        $this->_charset = empty($charset) ? self::CHARSET : $charset;
     }
 
-    /**
-     * 功    能：获取mime类型
-     * 修改日期：2017-4-15
-     *
-     * @param string $type 类型
-     *
-     * @return string 类型
-     */
-    private static function getContentType($type)
+    public function getCharset()
     {
-        return isset(self::$mimeTypes[$type]) ? self::$mimeTypes[$type] : '';
+        if (empty($this->_charset)) {
+            $this->setCharset();
+        }
+
+        return $this->_charset;
+    }
+
+    public function setContentType($contentType = 'text/html')
+    {
+        header('Content-Type: ' . $contentType . '; charset=' . $this->getCharset(), true);
+    }
+
+    public function setHeader($name, $value)
+    {
+        header($name . ': ' . $value, true);
+    }
+
+    public static function setStatus($code)
+    {
+        if (isset(self::$_httpCode[$code])) {
+            header((isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1') . ' ' . $code . ' ' . self::$_httpCode[$code], true, $code);
+        }
+    }
+
+    public function throwXml($msg)
+    {
+        /** 设置http头信息 */
+        $this->setContentType('text/xml');
+
+        /** 构建消息体 */
+        echo '<?xml version="1.0" encoding="' . $this->getCharset() . '"?>',
+        '<response>',
+        $this->_parseXml($msg),
+        '</response>';
+
+        /** 终止后续输出 */
+        exit;
+    }
+
+    public function throwJson($msg)
+    {
+        /** 设置http头信息 */
+        $this->setContentType('application/json');
+
+        echo json_encode($msg);
+
+        /** 终止后续输出 */
+        exit;
+    }
+
+    public function redirect($location, $isPermanently = false)
+    {
+        // 考虑处理url $location
+        if ($isPermanently) {
+            header('Location: ' . $location, false, 301);
+            exit;
+        } else {
+            header('Location: ' . $location, false, 302);
+            exit;
+        }
+    }
+
+    public function goBack($suffix = null, $default = null)
+    {
+        //获取来源
+        $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+
+        //判断来源
+        if (!empty($referer)) {
+            // ~ fix Issue 38
+            if (!empty($suffix)) {
+                $parts = parse_url($referer);
+                $myParts = parse_url($suffix);
+
+                if (isset($myParts['fragment'])) {
+                    $parts['fragment'] = $myParts['fragment'];
+                }
+
+                if (isset($myParts['query'])) {
+                    $args = array();
+                    if (isset($parts['query'])) {
+                        parse_str($parts['query'], $args);
+                    }
+
+                    parse_str($myParts['query'], $currentArgs);
+                    $args = array_merge($args, $currentArgs);
+                    $parts['query'] = http_build_query($args);
+                }
+
+                $referer = (isset($parts['scheme']) ? $parts['scheme'] . '://' : null)
+                    . (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : null) . '@' : null)
+                    . (isset($parts['host']) ? $parts['host'] : null)
+                    . (isset($parts['port']) ? ':' . $parts['port'] : null)
+                    . (isset($parts['path']) ? $parts['path'] : null)
+                    . (isset($parts['query']) ? '?' . $parts['query'] : null)
+                    . (isset($parts['fragment']) ? '#' . $parts['fragment'] : null);
+            }
+
+            $this->redirect($referer, false);
+        } else if (!empty($default)) {
+            $this->redirect($default);
+        }
+
+        exit;
     }
 }

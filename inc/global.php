@@ -8,6 +8,9 @@
 #ini_set('display_errors', 'on');
 #error_reporting(E_ALL);
 use \Xiaotu\Http\Gpcs;
+
+ini_set('default_charset', 'UTF-8');
+
 if (file_exists(dirname(__FILE__) . '/online.txt'))
 {
     define('ENVIRONMENT', 'PRODUCT');

@@ -30,7 +30,7 @@ class Base
     public static function getInstance()
     {
         $className = get_called_class();
-        if (!isset(static::$_instance[$className]))
+        if (!isset(static::$_instance[$className]) || !is_object(static::$_instance[$className]))
         {
             static::$_instance[$className] = new static();
         }

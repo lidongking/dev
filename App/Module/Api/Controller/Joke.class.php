@@ -39,7 +39,6 @@ class Joke extends Controller
             'maxPage' => $maxPage,
             'data' => $data
         );
-        $json = json_encode($retData);
-        Response::output($json, 'json', 'UTF-8');
+        Response::getInstance()->throwJson($retData);
     }
 }

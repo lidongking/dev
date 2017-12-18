@@ -12,7 +12,7 @@ use Xiaotu\Model;
 
 class CacheKey extends Model
 {
-    const JOKE_LIST = 'joke_list_';
-    const JOKE_INFO = 'joke_info_';
+    const JOKE_LIST = 'joke_list';
+    const JOKE_INFO = 'joke_info';
     const JOKE_MAX_PAGE = 'joke_max_page';
 }

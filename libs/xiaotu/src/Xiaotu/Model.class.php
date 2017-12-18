@@ -9,6 +9,7 @@
 namespace Xiaotu;
 
 use Xiaotu\Cache\File;
+use Xiaotu\Cache\MongoDB;
 use Xiaotu\Cache\Redis;
 use Xiaotu\DataBase\MySQL;
 
@@ -18,6 +19,8 @@ use Xiaotu\DataBase\MySQL;
  *
  * @property MySQL $db
  * @property Redis $redis
+ * @property MongoDB $mongo
+ * @property File $cache
  */
 class Model extends Base
 {
@@ -33,5 +36,10 @@ class Model extends Base
         $this->db = MySQL::getInstance();
         $this->redis = Redis::getInstance();
         $this->cache = File::getInstance();
+    }
+
+    public function __destruct()
+    {
+        $this->db = $this->redis = $this->cache = $this->mongo = null;
     }
 }
