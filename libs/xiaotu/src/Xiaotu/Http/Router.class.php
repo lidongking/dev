@@ -91,6 +91,7 @@ class Router extends Base
         if (!class_exists($controllerStr))
         {
             Response::setStatus(404);
+            echo '<h2>404 Not Found!</h2>';
             exit;
         }
         $controller = $controllerStr::getInstance();
@@ -105,6 +106,7 @@ class Router extends Base
         else
         {
             Response::setStatus(404);
+            echo '<h2>404 Not Found!</h2>';
             exit;
         }
     }
