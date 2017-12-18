@@ -90,7 +90,7 @@ class Router extends Base
         //判定类是否存在
         if (!class_exists($controllerStr))
         {
-            Response::status(404, 'Class: <b>' . $controllerStr . '</b> is unavailable.');
+            Response::setStatus(404);
             exit;
         }
         $controller = $controllerStr::getInstance();
@@ -104,7 +104,7 @@ class Router extends Base
         }
         else
         {
-            Response::status(404, 'Method: <b>' . $controllerStr . '</b>::<b>' . $actionStr . '</b>() is unavailable.');
+            Response::setStatus(404);
             exit;
         }
     }
