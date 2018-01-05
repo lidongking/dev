@@ -82,32 +82,34 @@ class Router extends Base
         //action 首字母小写驼峰
         self::$_action = lcfirst(self::$_action);
 
-        $mod = self::$_module;
-        $con = self::$_controller;
-        $act = self::$_action;
+        self::run(array(self::$_module, self::$_controller, self::$_action));
+    }
+
+    public static function run($config = array())
+    {
+        list($mod, $con, $act) = $config;
         $modStr = $mod ? "\\Module\\{$mod}" : '';
         $controllerStr = "\\App{$modStr}\\Controller\\{$con}";
         //判定类是否存在
-        if (!class_exists($controllerStr))
+        if (class_exists($controllerStr))
         {
-            Response::setStatus(404);
-            echo '<h2>404 Not Found!</h2>';
-            exit;
-        }
-        $controller = $controllerStr::getInstance();
-        //设置参数
-        $controller->setParams(self::$params);
-        $actionStr = $act . 'Action';
-        //判定方法是否存在
-        if (method_exists($controller, $actionStr))
-        {
-            $controller->$actionStr();
+            $controller = $controllerStr::getInstance();
+            //设置参数
+            $controller->setParams(self::$params);
+            $actionStr = $act . 'Action';
+            //判定方法是否存在
+            if (method_exists($controller, $actionStr))
+            {
+                $controller->$actionStr();
+            }
+            else
+            {
+                Response::setStatus(404);
+            }
         }
         else
         {
             Response::setStatus(404);
-            echo '<h2>404 Not Found!</h2>';
-            exit;
         }
     }
 }
