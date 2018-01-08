@@ -24,74 +24,38 @@ class Helper
     }
 
     /**
-     * 功    能：gbk转utf-8
-     * 修改日期：2017-6-2
+     * 功    能：变量编码转换，支持字符串和数组
+     * 修改日期：2018/1/8
      *
-     * @param array|string $array 待转换编码数据
+     * @param array|string $data 带转换数据
+     * @param string $to 目的编码
+     * @param string $from 源编码
      *
-     * @return array|string 转码结果
+     * @return array|string 结果
      */
-    public static function gbk2utf8($array)
+    public static function convertEncoding($data, $to = 'GBK', $from = 'UTF-8')
     {
-        $tmpArr = null;
-        if (empty($array))
-        {
-            $tmpArr = $array;
-        }
+        $desData = array();
 
-        if (!is_array($array))
+        if (is_string($data))
         {
-            $tmpArr = mb_convert_encoding($array, 'UTF-8', 'GBK');
+            // 只有是string类型才会转换，防止过多转换，例如：number,bool等
+            $desData = mb_convert_encoding($data, $to, $from);
         }
-
-        foreach ($array as $key => $value)
+        elseif (is_array($data))
         {
-            if (is_array($value))
+            foreach ($data as $dataKey => $dataVal)
             {
-                $tmpArr[self::gbk2utf8($key)] = self::gbk2utf8($value);
-            }
-            else
-            {
-                $tmpArr[self::gbk2utf8($key)] = mb_convert_encoding($value, 'UTF-8', 'GBK');
+                $dataKey = convertEncoding($dataKey, $to, $from);
+                $dataVal = convertEncoding($dataVal, $to, $from);
+                $desData[$dataKey] = $dataVal;
             }
         }
-
-        return $tmpArr;
-    }
-
-    /**
-     * 功    能：utf-8转gbk
-     * 修改日期：2017-6-2
-     *
-     * @param array|string $array 待转换编码数据
-     *
-     * @return array|string 转码结果
-     */
-    public static function utf82gbk($array)
-    {
-        $tmpArr = null;
-        if (empty($array))
+        else
         {
-            $tmpArr = $array;
+            $desData = $data;
         }
 
-        if (!is_array($array))
-        {
-            $tmpArr = mb_convert_encoding($array, 'GBK', 'UTF-8');
-        }
-
-        foreach ($array as $key => $value)
-        {
-            if (is_array($value))
-            {
-                $tmpArr[self::utf82gbk($key)] = self::utf82gbk($value);
-            }
-            else
-            {
-                $tmpArr[self::utf82gbk($key)] = mb_convert_encoding($value, 'GBK', 'UTF-8');
-            }
-        }
-
-        return $tmpArr;
+        return $desData;
     }
 }
