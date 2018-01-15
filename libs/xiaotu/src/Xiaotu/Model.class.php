@@ -50,7 +50,7 @@ class Model extends Base
         ($this->pkName . '=:' . $this->pkName,
             array(
             $this->pkName => $id,
-        ))->find(\PDO::FETCH_CLASS);
+        ))->find();
     }
 
     public function add($data)
