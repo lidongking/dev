@@ -46,7 +46,7 @@ class Model extends Base
 
     public function get($id)
     {
-        return $this->db->table($this->tableName)->select('id, nickname, username, register_time, last_login_info')->where
+        return $this->db->table($this->tableName)->select('*')->where
         ($this->pkName . '=:' . $this->pkName,
             array(
             $this->pkName => $id,
