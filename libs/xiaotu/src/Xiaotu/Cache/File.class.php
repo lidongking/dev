@@ -46,7 +46,7 @@ class File
      */
     public static function getInstance($dbKey = 'DEFAULT')
     {
-        $dbKey = strtoupper($dbKey);
+        $dbKey = strtolower($dbKey);
         if (!isset(self::$instances[$dbKey]))
         {
             global $CFG;

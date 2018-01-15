@@ -12,6 +12,13 @@ use Xiaotu\Model;
 
 class Joke extends Model
 {
+    protected $db;
+    protected $dbName = 'jelly_tec';
+    protected $tableName = 'jokes';
+    protected $pkName = 'id';
+    protected $id;
+    protected $data = array();
+
     protected $pageSize = 20;
     protected $pageMax = null;
 

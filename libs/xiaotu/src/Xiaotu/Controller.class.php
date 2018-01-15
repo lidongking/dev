@@ -14,8 +14,6 @@ use \Smarty;
 
 class Controller extends Base
 {
-    protected $db;
-    protected $redis;
     protected $smarty;
     protected $_params;
     protected $pageData = array();
@@ -24,7 +22,6 @@ class Controller extends Base
     {
         global $CFG;
         parent::__construct();
-        $this->db = MySQL::getInstance();
 
         // smarty
         $smarty = new Smarty;
@@ -35,11 +32,8 @@ class Controller extends Base
         $smarty->cache_lifetime = $CFG['smarty']['CACHE_TIME'];
         //$smarty->force_compile = true;
 
-        // redis
-        $redis = Redis::getInstance();
 
         $this->smarty = $smarty;
-        $this->redis = $redis;
     }
 
     /**

@@ -9,8 +9,6 @@
 namespace Xiaotu;
 
 use Xiaotu\Cache\File;
-use Xiaotu\Cache\MongoDB;
-use Xiaotu\Cache\Redis;
 use Xiaotu\DataBase\MySQL;
 
 /**
@@ -18,28 +16,76 @@ use Xiaotu\DataBase\MySQL;
  * @package Xiaotu
  *
  * @property MySQL $db
- * @property Redis $redis
- * @property MongoDB $mongo
  * @property File $cache
  */
 class Model extends Base
 {
     protected $db;
-    protected $redis;
-    protected $mongo;
+    protected $dbName;
+    protected $tableName;
+    protected $pkName;
+    protected $id;
+    protected $data = array();
 
     protected $cache;
 
     protected function __construct()
     {
         parent::__construct();
-        $this->db = MySQL::getInstance();
-        $this->redis = Redis::getInstance();
-        $this->cache = File::getInstance();
+        if ($this->dbName)
+        {
+            $this->db = MySQL::getInstance($this->dbName);
+        }
+        $this->cache = File::getInstance('c1');
     }
 
     public function __destruct()
     {
-        $this->db = $this->redis = $this->cache = $this->mongo = null;
+        $this->db = $this->cache = null;
+    }
+
+    public function get($id)
+    {
+        return $this->db->table($this->tableName)->select('id, nickname, username, register_time, last_login_info')->where
+        ($this->pkName . '=:' . $this->pkName,
+            array(
+            $this->pkName => $id,
+        ))->find(\PDO::FETCH_CLASS);
+    }
+
+    public function add($data)
+    {
+        return $this->db->table($this->tableName)->insert($data)->execute();
+    }
+
+    public function del($id)
+    {
+        return $this->db->table($this->tableName)->where($this->pkName . '=:' . $this->pkName, array($this->pkName, $id))->delete()->execute();
+    }
+
+    public function save()
+    {
+        return $this->edit($this->id, $this->data);
+    }
+
+    public function edit($id, $data)
+    {
+        return $this->db->table($this->tableName)->where($this->pkName . '=:' . $this->pkName, array($this->pkName, $id))->update
+            ($data)->execute();
+    }
+
+    public function drop($id)
+    {
+        return $this->del($id);
+    }
+
+    public function __get($name)
+    {
+        return $this->data[$name];
+    }
+
+    public function __set($name, $value)
+    {
+        $this->data[$name] = $value;
     }
 }

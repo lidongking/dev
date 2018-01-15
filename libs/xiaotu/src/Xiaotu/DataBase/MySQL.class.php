@@ -49,7 +49,7 @@ class MySQL
         $dbPort = isset($config['port']) && $config['port'] ? $config['port'] : '3306';
         $dbUser = $config['user'];
         $dbPass = $config['pass'];
-        $dbName = $config['dbName'];
+        $dbName = isset($config['dbName']) ? $config['dbName'] : $config['dbKey'];
         $tablePrefix = isset($config['prefix']) ? $config['prefix'] : '';
         $charset = isset($config['charset']) ? strtolower(str_replace('-', '', $config['charset'])) : 'utf8';
         $isPersistent = empty($config['persistent']) ? false : true;
@@ -81,16 +81,16 @@ class MySQL
      *
      * @return MySQL 当前DB实例
      */
-    public static function getInstance($dbKey = 'default')
+    public static function getInstance($dbKey = 'jelly_tec')
     {
-        $dbKey = strtoupper($dbKey);
+        $dbKey = strtolower($dbKey);
         if (empty(self::$instances[$dbKey]))
         {
             global $CFG;
 
             $config = $CFG['mysql'][$dbKey];
             $config['dbKey'] = $dbKey;
-            self::$instances[$dbKey] = new static($config);
+            self::$instances[$dbKey] = new self($config);
         }
 
         return self::$instances[$dbKey];
