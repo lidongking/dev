@@ -12,7 +12,8 @@ use Xiaotu\Model;
 
 class Test extends Model
 {
-    public function get()
+    protected $dbName = 'jelly_tec';
+    public function getData()
     {
         $data = $this->db->table('jokes')->select('*')->limit(0, 100)->findAll();
         return $data;

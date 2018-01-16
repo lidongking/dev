@@ -58,4 +58,31 @@ class Helper
 
         return $desData;
     }
+
+    /**
+     * 功    能：去除不可见字符
+     * 修改日期：2018/1/16
+     *
+     * @param string $str 字符串
+     * @param bool $urlEncoded 是否urlEncode
+     * @return null|string|string[] 结果
+     */
+    public static function removeInvisibleCharacters($str, $urlEncoded = TRUE)
+    {
+        $nonDisplayables = array();
+        // every control character except newline (dec 10)
+        // carriage return (dec 13), and horizontal tab (dec 09)
+        if ($urlEncoded)
+        {
+            $nonDisplayables[] = '/%0[0-8bcef]/'; // url encoded 00-08, 11, 12, 14, 15
+            $nonDisplayables[] = '/%1[0-9a-f]/'; // url encoded 16-31
+        }
+        $nonDisplayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S'; // 00-08, 11, 12, 14-31, 127
+        do
+        {
+            $str = preg_replace($nonDisplayables, '', $str, -1, $count);
+        }
+        while ($count);
+        return $str;
+    }
 }

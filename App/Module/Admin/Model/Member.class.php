@@ -37,5 +37,13 @@ class Member extends Model
 
         $m1 = $this->get(1);
         var_dump($m1);
+        $m1['last_login_info'] = json_encode(array(
+            'ip' => '123.32.244.15',
+            'login_time' => date('Y-m-d H:i:s')
+        ));
+        $this->data = $m1;
+        $this->save();
+        $m1 = $this->get(1);
+        var_dump($m1);
     }
 }

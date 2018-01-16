@@ -7,7 +7,10 @@
  */
 
 use Xiaotu\Http\Router;
+use Xiaotu\Http\Gpcs;
 
 include_once dirname(__FILE__) . '/inc/global.php';
 include_once dirname(__FILE__) . '/libs/xiaotu/autoload.php';
+var_dump(Gpcs::server());
 Router::dispatch();
+

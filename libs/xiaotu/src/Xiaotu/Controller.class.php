@@ -18,7 +18,7 @@ class Controller extends Base
     protected $_params;
     protected $pageData = array();
 
-    protected function __construct()
+    public function __construct()
     {
         global $CFG;
         parent::__construct();

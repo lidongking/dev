@@ -407,6 +407,7 @@ class MySQL
                     $this->sql .= $this->where;
                     break;
             }
+            var_dump($this->sql);
             if ($this->pdoStatement = $pdo->prepare($this->sql))
             {
                 foreach ($this->data as $key => $val)

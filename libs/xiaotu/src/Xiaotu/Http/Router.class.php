@@ -101,6 +101,10 @@ class Router extends Base
             if (method_exists($controller, $actionStr))
             {
                 $controller->$actionStr();
+                call_user_func(array(
+                    $controller,
+                    $actionStr,
+                ), $params);
             }
             else
             {

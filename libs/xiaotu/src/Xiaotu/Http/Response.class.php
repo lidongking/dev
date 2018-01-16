@@ -168,10 +168,10 @@ class Response extends Base
     {
         // 考虑处理url $location
         if ($isPermanently) {
-            header('Location: ' . $location, false, 301);
+            header('Location: ' . $location, true, 301);
             exit;
         } else {
-            header('Location: ' . $location, false, 302);
+            header('Location: ' . $location, true, 302);
             exit;
         }
     }

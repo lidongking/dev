@@ -60,7 +60,8 @@ class Model extends Base
 
     public function del($id)
     {
-        return $this->db->table($this->tableName)->where($this->pkName . '=:' . $this->pkName, array($this->pkName, $id))->delete()->execute();
+        return $this->db->table($this->tableName)->where($this->pkName . '=:' . $this->pkName, array($this->pkName => $id))->delete()
+            ->execute();
     }
 
     public function save()
@@ -70,8 +71,8 @@ class Model extends Base
 
     public function edit($id, $data)
     {
-        return $this->db->table($this->tableName)->where($this->pkName . '=:' . $this->pkName, array($this->pkName, $id))->update
-            ($data)->execute();
+        return $this->db->table($this->tableName)->where($this->pkName . '=:' . $this->pkName, array($this->pkName => $id))->update
+    ($data)->execute();
     }
 
     public function drop($id)

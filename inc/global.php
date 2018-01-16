@@ -8,6 +8,7 @@
 #ini_set('display_errors', 'on');
 #error_reporting(E_ALL);
 use \Xiaotu\Http\Gpcs;
+use \Smarty_Autoloader;
 
 ini_set('default_charset', 'UTF-8');
 
@@ -31,7 +32,14 @@ include_once dirname(__FILE__) . '/config.php';
 // PHPQuery
 // include_once ROOT_PATH . '/vendor/phpQuery/phpQuery.php';
 include_once ROOT_PATH . '/vendor/Smarty/Autoloader.php';
-\Smarty_Autoloader::register();
+Smarty_Autoloader::register();
+
+// cli 修复$_SERVER['DOCUMENT_ROOT']
+if ('cli' === PHP_SAPI || empty($_SERVER['DOCUMENT_ROOT']))
+{
+    // cli 下 DOCUMENT_ROOT 为空
+    $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__);
+}
 
 // 加载器
 include_once ROOT_PATH . '/libs/xiaotu/autoload.php';
