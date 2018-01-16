@@ -7,18 +7,17 @@
  */
 
 use Xiaotu\Http\Gpcs;
-use \Xiaotu\Http\RouterNew;
+use Xiaotu\Http\RouterNew;
 
 include_once dirname(__FILE__) . '/inc/global.php';
 include_once dirname(__FILE__) . '/libs/xiaotu/autoload.php';
 
-RouterNew::init();
+RouterNew::init($CFG['router']);
 RouterNew::parseUrl();
-
 exit;
 
+/*
 // 传统方法，仅支持Web模式 指定mca参数
-
 $m = Gpcs::get('m') ? Gpcs::get('m') : '';
 $c = Gpcs::get('c') ? Gpcs::get('c') : 'Default';
 $a = Gpcs::get('a') ? Gpcs::get('a') : 'index';
@@ -35,3 +34,4 @@ if (class_exists($className))
 }
 
 die('Error 403');
+*/

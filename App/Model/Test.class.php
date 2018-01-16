@@ -13,6 +13,8 @@ use Xiaotu\Model;
 class Test extends Model
 {
     protected $dbName = 'jelly_tec';
+    protected $tableName = 'jokes';
+
     public function getData()
     {
         $data = $this->db->table('jokes')->select('*')->limit(0, 100)->findAll();

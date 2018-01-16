@@ -191,8 +191,8 @@ class Home extends Controller
     public function testAction()
     {
         $test = Test::getInstance();
-        $res = $test->getData();
-        var_dump($res);
+        $t1 = $test->get(1);
+        var_dump($t1);
     }
 }
 

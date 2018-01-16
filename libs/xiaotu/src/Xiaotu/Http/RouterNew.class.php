@@ -23,6 +23,8 @@ class RouterNew extends Base
     {
         static::$_config = $config;
         !isset(static::$_config['namespace']) ? static::$_config['namespace'] = 'App' : static::$_config['namespace'];
+        Response::getInstance()->setHeader('Server', 'JS');
+        Response::getInstance()->setHeader('Powered-by', 'Jelly-Tec.com');
     }
 
     public static function parseUrl()
@@ -58,11 +60,10 @@ class RouterNew extends Base
                 $uri = str_replace(array('//', '../'), '/', trim($uri, '/'));
                 $uri = Helper::removeInvisibleCharacters($uri);
                 // 兼容自定义后缀
-                $ext = isset(static::$_config['ext']) && static::$_config['ext'] ? isset(static::$_config['ext']) : 'php';
+                $ext = isset(static::$_config['ext']) && static::$_config['ext'] ? static::$_config['ext'] : 'php';
                 $uri = preg_replace("|.{$ext}$|", '', $uri);
-
                 // 跳转
-                $moves = isset(static::$config['moves']) ? static::$config['moves'] : array();
+                $moves = isset(static::$_config['moves']) ? static::$_config['moves'] : array();
                 if (!empty($moves))
                 {
                     if (isset($moves[$uri]))

@@ -5,10 +5,7 @@
  * 作    者：wangld
  * 修改日期：2017/6/1
  */
-#ini_set('display_errors', 'on');
-#error_reporting(E_ALL);
 use \Xiaotu\Http\Gpcs;
-use \Smarty_Autoloader;
 
 ini_set('default_charset', 'UTF-8');
 
@@ -20,7 +17,6 @@ else
 {
     define('ENVIRONMENT', 'DEVELOPMENT');
 }
-
 if ('PRODUCT' !== ENVIRONMENT)
 {
     ini_set('display_errors', 'on');
@@ -37,7 +33,7 @@ Smarty_Autoloader::register();
 // cli 修复$_SERVER['DOCUMENT_ROOT']
 if ('cli' === PHP_SAPI || empty($_SERVER['DOCUMENT_ROOT']))
 {
-    // cli 下 DOCUMENT_ROOT 为空
+    // cli 下 DOCUMENT_ROOT 空
     $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__);
 }
 

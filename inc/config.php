@@ -21,13 +21,6 @@ $mysql = array(
         'pass' => 'cookies',
         'prefix' => 'jt_'
     ),
-    'jt_shop_sys' => array(
-        'host' => $localIp,
-        'port' => 3306,
-        'user' => 'Jelly',
-        'pass' => 'cookies',
-        'prefix' => ''
-    )
 );
 
 $redis = array(
@@ -64,9 +57,22 @@ $smarty = array(
     'CACHE_TIME' => 120
 );
 
+// 路由
+$router = array(
+    'ext' => 'html',
+    'namespace' => 'App',
+    'moves' => array(
+        'Home/test/a/aa/a/2133' => '/tz.php'
+    ),
+    'routers' => array(
+        'Home/test/a/aa/a/2133' => 'Api/get'
+    )
+);
+
 $CFG = array(
     'mysql' => $mysql,
     'redis' => $redis,
     'cache' => $cache,
-    'smarty' => $smarty
+    'smarty' => $smarty,
+    'router' => $router
 );

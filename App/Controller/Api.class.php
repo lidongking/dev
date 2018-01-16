@@ -12,7 +12,7 @@ use Xiaotu\Controller;
 
 class Api extends Controller
 {
-    public function getAction($p1, $p2, $p3)
+    public function getAction()
     {
         echo 'get';
     }
