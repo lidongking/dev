@@ -12,13 +12,22 @@ use Xiaotu\Base;
 use Xiaotu\Tool\Helper;
 use ReflectionMethod;
 
+/**
+ * Class RouterNew
+ *
+ * @package Xiaotu\Http
+ */
 class RouterNew extends Base
 {
+
     private static $_class = null;
     private static $_method = null;
     private static $_params = array();
     private static $_config = array();
 
+    /**
+     * @param array $config Router configs init
+     */
     public static function init($config = array())
     {
         static::$_config = $config;
@@ -27,12 +36,18 @@ class RouterNew extends Base
         Response::getInstance()->setHeader('Powered-by', 'Jelly-Tec.com');
     }
 
+    /**
+     * match uri
+     */
     public static function parseUrl()
     {
         'cli' == PHP_SAPI ? static::parseCli() : static::parseWeb();
         static::run();
     }
 
+    /**
+     * match uri for cli
+     */
     protected static function parseCli()
     {
         $segments = isset($argv) ? $argv : Gpcs::server('argv');
@@ -40,6 +55,9 @@ class RouterNew extends Base
         static::router($segments);
     }
 
+    /**
+     * match uri for web
+     */
     protected static function parseWeb()
     {
         $requestUri = Gpcs::server('REQUEST_URI');
@@ -57,7 +75,10 @@ class RouterNew extends Base
             if ($requestUri && $requestUri != '/')
             {
                 $uri = parse_url($requestUri, PHP_URL_PATH);
-                $uri = str_replace(array('//', '../'), '/', trim($uri, '/'));
+                $uri = str_replace(array(
+                    '//',
+                    '../',
+                ), '/', trim($uri, '/'));
                 $uri = Helper::removeInvisibleCharacters($uri);
                 // 兼容自定义后缀
                 $ext = isset(static::$_config['ext']) && static::$_config['ext'] ? static::$_config['ext'] : 'php';
@@ -96,17 +117,31 @@ class RouterNew extends Base
                 if ($uri)
                 {
 
-                    if (!preg_match("|^[" . str_replace(array('\\-', '\-'), '-', preg_quote('a-z 0-9~%.:_\-/', '-')) . "]+$|i", $uri))
+                    if (!preg_match("|^[" . str_replace(array(
+                            '\\-',
+                            '\-',
+                        ), '-', preg_quote('a-z 0-9~%.:_\-/', '-')) . "]+$|i", $uri))
                     {
                         return;
                     }
-                    $bad = array('$', '(', ')', '%28', '%29');
-                    $good = array('&#36;', '&#40;', '&#41;', '&#40;', '&#41;');
+                    $bad = array(
+                        '$',
+                        '(',
+                        ')',
+                        '%28',
+                        '%29',
+                    );
+                    $good = array(
+                        '&#36;',
+                        '&#40;',
+                        '&#41;',
+                        '&#40;',
+                        '&#41;',
+                    );
                     $uri = str_replace($bad, $good, $uri);
                     $segments = explode('/', preg_replace("|/*(.+?)/*$|", "\\1", $uri));
 
                     static::router($segments);
-
                 }
             }
             else
@@ -117,6 +152,9 @@ class RouterNew extends Base
         }
     }
 
+    /**
+     * @param $segments green uri
+     */
     protected static function router($segments)
     {
         $segCount = count($segments);
@@ -126,7 +164,7 @@ class RouterNew extends Base
         }
         elseif ($segCount == 2)
         {
-            static::$_class = static::$_config['namespace']. '\\' . 'Controller' . '\\' . ucfirst($segments[0]);
+            static::$_class = static::$_config['namespace'] . '\\' . 'Controller' . '\\' . ucfirst($segments[0]);
             static::$_method = lcfirst($segments[1]);
         }
         elseif ($segCount >= 3)
@@ -142,8 +180,7 @@ class RouterNew extends Base
             if (static::$_class === null)
             {
                 // 匹配不到CA，匹配MCA
-                static::$_class = static::$_config['namespace'] . '\\' . 'Module' . '\\' . $segments[0] . '\\Controller\\' .
-            $segments[1];
+                static::$_class = static::$_config['namespace'] . '\\' . 'Module' . '\\' . $segments[0] . '\\Controller\\' . $segments[1];
                 static::$_method = lcfirst($segments[2]);
                 static::$_params = array_slice($segments, 3);
             }
@@ -154,6 +191,9 @@ class RouterNew extends Base
         }
     }
 
+    /**
+     * run uri
+     */
     protected static function run()
     {
         // 实际方法
@@ -167,16 +207,23 @@ class RouterNew extends Base
             {
                 $obj = $class::getInstance();
 
-                // 匹配到了方法
-                call_user_func_array(array(&$obj, $method), $params);
+                // mca is validate
+                call_user_func_array(array(
+                    &$obj,
+                    $method,
+                ), $params);
+
                 return;
             }
         }
 
-        // 最终走404
+        // not match to 404.
         static::error404();
     }
 
+    /**
+     * Do something for 404.
+     */
     protected static function error404()
     {
         Response::setStatus(404);
