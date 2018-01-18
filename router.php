@@ -10,4 +10,6 @@ use Xiaotu\Http\RouterNew;
 
 include_once dirname(__FILE__) . '/inc/global.php';
 include_once dirname(__FILE__) . '/libs/xiaotu/autoload.php';
-RouterNew::dispatch();
+RouterNew::init($CFG['router']);
+RouterNew::parseUrl();
+exit;
