@@ -6,11 +6,8 @@
  * 修改日期：2017/11/9
  */
 
-use Xiaotu\Http\Router;
-use Xiaotu\Http\Gpcs;
+use Xiaotu\Http\RouterNew;
 
 include_once dirname(__FILE__) . '/inc/global.php';
 include_once dirname(__FILE__) . '/libs/xiaotu/autoload.php';
-var_dump(Gpcs::server());
-Router::dispatch();
-
+RouterNew::dispatch();

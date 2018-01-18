@@ -104,7 +104,7 @@ class Router extends Base
                 call_user_func(array(
                     $controller,
                     $actionStr,
-                ), $params);
+                ));
             }
             else
             {
