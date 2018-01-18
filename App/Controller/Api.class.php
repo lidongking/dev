@@ -15,5 +15,6 @@ class Api extends Controller
     public function getAction()
     {
         echo 'get';
+        test();
     }
 }
