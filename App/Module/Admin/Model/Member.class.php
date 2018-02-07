@@ -8,42 +8,66 @@
 
 namespace App\Module\Admin\Model;
 
-use Xiaotu\Model;
+use Xiaotu\Tool\Helper;
 
 class Member extends Model
 {
+
     protected $db;
     protected $dbName = 'jt_shop_sys';
     protected $tableName = 'sys_member';
     protected $pkName = 'id';
+
+    // password, solt
+    protected $salt = 'AW!@#$%*&)w235;|/w(';
+
+    const USER_IS_INVALIDED = - 1;
+    const USER_PASSWORD_ERROR = - 2;
+    const USER_IS_VALIDATED = 1;
+
+    const USER_LOGIN_EXPIRES = 86400;    // Default 24h one day
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function test()
+    public function login($data)
     {
-        // $m1 = array(
-        //     'nickname' => '师大果冻',
-        //     'username' => 'LidongKing',
-        //     'password' => md5('cookies'),
-        //     'age' => 25,
-        //     'sex' => '男',
-        //     'telephone' => '18355300869'
-        // );
-        // $m1Status = $this->add($m1);
-        // var_dump($m1Status);
+        $username = $data['username'];
+        $password = $data['password'];
 
-        $m1 = $this->get(1);
-        var_dump($m1);
-        $m1['last_login_info'] = json_encode(array(
-            'ip' => '123.32.244.15',
-            'login_time' => date('Y-m-d H:i:s')
-        ));
-        $this->data = $m1;
-        $this->save();
-        $m1 = $this->get(1);
-        var_dump($m1);
+        $user = $this->find('username = :u', array('u' => $username));
+        if (empty($user))
+        {
+            // 用户不存在
+            $code = self::USER_IS_INVALIDED;
+        }
+        else
+        {
+            if ($this->password($password) === $user['password'])
+            {
+                $code = self::USER_IS_VALIDATED;
+                $this->data = $user;
+                $loginInfo = array(
+                    'ip' => Helper::getClientIp(),
+                    'time' => date('Y-m-d H:i:s')
+                );
+                $this->data['last_login_info'] = json_encode($loginInfo);
+                // 保存登录信息
+                $this->save();
+            }
+            else
+            {
+                $code = self::USER_PASSWORD_ERROR;
+            }
+        }
+
+        return $code;
+    }
+
+    protected function password($password)
+    {
+        return md5($this->salt . md5($password) . md5(substr($this->salt, intval(strlen($this->salt) / 2))));
     }
 }

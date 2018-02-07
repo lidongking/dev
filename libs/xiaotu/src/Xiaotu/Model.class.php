@@ -145,4 +145,9 @@ class Model extends Base
     {
         $this->data[$name] = $value;
     }
+
+    protected function find($expressions, $data)
+    {
+        return $this->db->table($this->tableName)->select()->where($expressions, $data)->find();
+    }
 }

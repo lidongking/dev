@@ -52,41 +52,10 @@ class Response extends Base
         502 => 'Bad Gateway',
         503 => 'Service Unavailable',
         504 => 'Gateway Timeout',
-        505 => 'HTTP Version Not Supported'
+        505 => 'HTTP Version Not Supported',
     );
-
     private $_charset;
-
     const CHARSET = "UTF-8";
-
-    private static $mimeTypes = array(
-        'chm' => 'application/octet-stream',
-        'ppt' => 'application/vnd.ms-powerpoint',
-        'xls' => 'application/vnd.ms-excel',
-        'doc' => 'application/msword',
-        'exe' => 'application/octet-stream',
-        'rar' => 'application/octet-stream',
-        'js' => "javascript/js",
-        'css' => "text/css",
-        'pdf' => "application/pdf",
-        'zip' => "application/zip",
-        'tar' => "application/x-tar",
-        'sh' => "application/x-sh",
-        'gif' => "image/gif",
-        'jpeg' => "image/pjpeg",
-        'jpg' => "image/pjpeg",
-        'tif' => "image/tiff",
-        'tiff' => "image/tiff",
-        'txt' => "text/plain",
-        'c' => "text/plain",
-        'h' => "text/plain",
-        'html' => "text/html",
-        'htm' => "text/html",
-        'mpeg' => "video/mpeg",
-        'movie' => "video/x-sgi-movie",
-        'wav' => "audio/x-wav",
-        'json' => "application/json"
-    );
 
     private function _parseXml($msg)
     {
@@ -114,7 +83,8 @@ class Response extends Base
 
     public function getCharset()
     {
-        if (empty($this->_charset)) {
+        if (empty($this->_charset))
+        {
             $this->setCharset();
         }
 
@@ -133,7 +103,8 @@ class Response extends Base
 
     public static function setStatus($code)
     {
-        if (isset(self::$_httpCode[$code])) {
+        if (isset(self::$_httpCode[$code]))
+        {
             header((isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1') . ' ' . $code . ' ' . self::$_httpCode[$code], true, $code);
         }
     }
@@ -142,13 +113,8 @@ class Response extends Base
     {
         /** 设置http头信息 */
         $this->setContentType('text/xml');
-
         /** 构建消息体 */
-        echo '<?xml version="1.0" encoding="' . $this->getCharset() . '"?>',
-        '<response>',
-        $this->_parseXml($msg),
-        '</response>';
-
+        echo '<?xml version="1.0" encoding="' . $this->getCharset() . '"?>', '<response>', $this->_parseXml($msg), '</response>';
         /** 终止后续输出 */
         exit;
     }
@@ -157,9 +123,7 @@ class Response extends Base
     {
         /** 设置http头信息 */
         $this->setContentType('application/json');
-
         echo json_encode($msg);
-
         /** 终止后续输出 */
         exit;
     }
@@ -167,10 +131,13 @@ class Response extends Base
     public function redirect($location, $isPermanently = false)
     {
         // 考虑处理url $location
-        if ($isPermanently) {
+        if ($isPermanently)
+        {
             header('Location: ' . $location, true, 301);
             exit;
-        } else {
+        }
+        else
+        {
             header('Location: ' . $location, true, 302);
             exit;
         }
@@ -180,43 +147,47 @@ class Response extends Base
     {
         //获取来源
         $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-
         //判断来源
-        if (!empty($referer)) {
+        if (!empty($referer))
+        {
             // ~ fix Issue 38
-            if (!empty($suffix)) {
+            if (!empty($suffix))
+            {
                 $parts = parse_url($referer);
                 $myParts = parse_url($suffix);
-
-                if (isset($myParts['fragment'])) {
+                if (isset($myParts['fragment']))
+                {
                     $parts['fragment'] = $myParts['fragment'];
                 }
-
-                if (isset($myParts['query'])) {
+                if (isset($myParts['query']))
+                {
                     $args = array();
-                    if (isset($parts['query'])) {
+                    if (isset($parts['query']))
+                    {
                         parse_str($parts['query'], $args);
                     }
-
                     parse_str($myParts['query'], $currentArgs);
                     $args = array_merge($args, $currentArgs);
                     $parts['query'] = http_build_query($args);
                 }
-
-                $referer = (isset($parts['scheme']) ? $parts['scheme'] . '://' : null)
-                    . (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : null) . '@' : null)
-                    . (isset($parts['host']) ? $parts['host'] : null)
-                    . (isset($parts['port']) ? ':' . $parts['port'] : null)
-                    . (isset($parts['path']) ? $parts['path'] : null)
-                    . (isset($parts['query']) ? '?' . $parts['query'] : null)
-                    . (isset($parts['fragment']) ? '#' . $parts['fragment'] : null);
+                $referer = (isset($parts['scheme']) ? $parts['scheme'] . '://' : null) . (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : null) . '@' : null) . (isset($parts['host']) ? $parts['host'] : null) . (isset($parts['port']) ? ':' . $parts['port'] : null) . (isset($parts['path']) ? $parts['path'] : null) . (isset($parts['query']) ? '?' . $parts['query'] : null) . (isset($parts['fragment']) ? '#' . $parts['fragment'] : null);
             }
-
             $this->redirect($referer, false);
-        } else if (!empty($default)) {
+        }
+        elseif (!empty($default))
+        {
             $this->redirect($default);
         }
-
         exit;
+    }
+
+    public static function showMsg($msg = '默认消息', $url = null, $timeout = 3)
+    {
+        $timeout = intval($timeout) * 1000;
+        $url = isset($url) ? $url : '';
+        $html = "<html><body><div style='width: 300px; height: 60px; padding: 10px; margin: 100px auto; border: 1px solid #CCCCCC; 
+text-align: center; vertical-align: middle; cursor: pointer;' onclick='window.location=\"{$url}\"'>{$msg}</div>";
+        $html .= "<script>setTimeout(\"if ('{$url}'){window.location='{$url}';}else{history.go(-1);}\", {$timeout});</script>" . "</body></html>";
+        exit($html);
     }
 }

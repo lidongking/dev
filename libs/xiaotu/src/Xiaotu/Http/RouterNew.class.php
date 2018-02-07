@@ -19,11 +19,11 @@ use ReflectionMethod;
  */
 class RouterNew extends Base
 {
-
     private static $_class = null;
     private static $_method = null;
     private static $_params = array();
     private static $_config = array();
+    protected static $uri = '/';
 
     /**
      * @param array $config Router configs init
@@ -32,8 +32,9 @@ class RouterNew extends Base
     {
         static::$_config = $config;
         !isset(static::$_config['namespace']) ? static::$_config['namespace'] = 'App' : static::$_config['namespace'];
-        Response::getInstance()->setHeader('Server', 'JS');
-        Response::getInstance()->setHeader('Powered-by', 'Jelly-Tec.com');
+        $response = Response::getInstance();
+        $response->setHeader('Server', 'JS');
+        $response->setHeader('Powered-by', 'Jelly-Tec.com');
     }
 
     /**
@@ -66,88 +67,83 @@ class RouterNew extends Base
         $scriptFileName = pathinfo($scriptFileName, PATHINFO_BASENAME);
         // 去除脚本/index.php/m/c/a中'/index.php' => ''
         $requestUri = str_replace('/' . $scriptFileName, '', $requestUri);
-
         if (isset($requestUri) && isset($scriptName))
         {
             $parts = preg_split('#\?#i', $requestUri, 2);
             $requestUri = $parts[0];
-
-            if ($requestUri && $requestUri != '/')
+            if ($requestUri == '/' || $requestUri == '')
             {
-                $uri = parse_url($requestUri, PHP_URL_PATH);
-                $uri = str_replace(array(
-                    '//',
-                    '../',
-                ), '/', trim($uri, '/'));
-                $uri = Helper::removeInvisibleCharacters($uri);
-                // 兼容自定义后缀
-                $ext = isset(static::$_config['ext']) && static::$_config['ext'] ? static::$_config['ext'] : 'php';
-                $uri = preg_replace("|.{$ext}$|", '', $uri);
-                // 跳转
-                $moves = isset(static::$_config['moves']) ? static::$_config['moves'] : array();
-                if (!empty($moves))
+                // 默认控制器路由 C/A
+                $requestUri = '/Home/index';
+            }
+            $uri = parse_url($requestUri, PHP_URL_PATH);
+            $uri = str_replace(array(
+                '//',
+                '../',
+            ), '/', trim($uri, '/'));
+            $uri = Helper::removeInvisibleCharacters($uri);
+            // 兼容自定义后缀
+            $ext = isset(static::$_config['ext']) && static::$_config['ext'] ? static::$_config['ext'] : 'php';
+            $uri = preg_replace("|{$ext}$|", '', $uri);
+            // 跳转
+            $moves = isset(static::$_config['moves']) ? static::$_config['moves'] : array();
+            if (!empty($moves))
+            {
+                if (isset($moves[$uri]))
                 {
-                    if (isset($moves[$uri]))
-                    {
-                        Response::getInstance()->redirect($moves[$uri]);
-                    }
+                    Response::getInstance()->redirect($moves[$uri]);
                 }
-                $routers = isset(static::$_config['routers']) ? static::$_config['routers'] : array();
-                if (!empty($routers))
+            }
+            $routers = isset(static::$_config['routers']) ? static::$_config['routers'] : array();
+            if (!empty($routers))
+            {
+                if (isset($routers[$uri]))
                 {
-                    if (isset($routers[$uri]))
+                    $uri = $routers[$uri];
+                }
+                else
+                {
+                    foreach ($routers as $key => $val)
                     {
-                        $uri = $routers[$uri];
-                    }
-                    else
-                    {
-                        foreach ($routers as $key => $val)
+                        if (preg_match("#^{$key}$#", $uri))
                         {
-                            if (preg_match("#^{$key}$#", $uri))
+                            if (false !== strpos($val, '$') && false !== strpos($key, '('))
                             {
-                                if (false !== strpos($val, '$') && false !== strpos($key, '('))
-                                {
-                                    $uri = preg_replace("#^{$key}$#", $val, $uri);
-                                }
-                                break;
+                                $uri = preg_replace("#^{$key}$#", $val, $uri);
                             }
+                            break;
                         }
                     }
                 }
-                if ($uri)
-                {
-
-                    if (!preg_match("|^[" . str_replace(array(
-                            '\\-',
-                            '\-',
-                        ), '-', preg_quote('a-z 0-9~%.:_\-/', '-')) . "]+$|i", $uri))
-                    {
-                        return;
-                    }
-                    $bad = array(
-                        '$',
-                        '(',
-                        ')',
-                        '%28',
-                        '%29',
-                    );
-                    $good = array(
-                        '&#36;',
-                        '&#40;',
-                        '&#41;',
-                        '&#40;',
-                        '&#41;',
-                    );
-                    $uri = str_replace($bad, $good, $uri);
-                    $segments = explode('/', preg_replace("|/*(.+?)/*$|", "\\1", $uri));
-
-                    static::router($segments);
-                }
             }
-            else
+            if ($uri)
             {
-                static::$_class = 'Default';
-                static::$_method = 'index';
+
+                if (!preg_match("|^[" . str_replace(array(
+                        '\\-',
+                        '\-',
+                    ), '-', preg_quote('a-z 0-9~%.:_\-/', '-')) . "]+$|i", $uri))
+                {
+                    return;
+                }
+                $bad = array(
+                    '$',
+                    '(',
+                    ')',
+                    '%28',
+                    '%29',
+                );
+                $good = array(
+                    '&#36;',
+                    '&#40;',
+                    '&#41;',
+                    '&#40;',
+                    '&#41;',
+                );
+                $uri = str_replace($bad, $good, $uri);
+                static::$uri = $uri;
+                $segments = explode('/', preg_replace("|/*(.+?)/*$|", "\\1", $uri));
+                static::router($segments);
             }
         }
     }
@@ -169,8 +165,8 @@ class RouterNew extends Base
         }
         elseif ($segCount >= 3)
         {
-            // 优先匹配CA
-            if (class_exists(static::$_config['namespace'] . '\\' . 'Controller' . '\\' . ucfirst($segments[0])))
+            // 优先匹配CA，匹配到class和method就不再匹配，必须匹配到method
+            if (class_exists(static::$_config['namespace'] . '\\' . 'Controller' . '\\' . ucfirst($segments[0])) && method_exists(static::$_config['namespace'] . '\\' . 'Controller' . '\\' . ucfirst($segments[0]), $segments[1] . 'Action'))
             {
                 static::$_class = static::$_config['namespace'] . '\\' . 'Controller' . '\\' . $segments[0];
                 static::$_method = lcfirst($segments[1]);
@@ -206,7 +202,6 @@ class RouterNew extends Base
             if ($rfm->isPublic() && !$rfm->isStatic())
             {
                 $obj = $class::getInstance();
-
                 // mca is validate
                 call_user_func_array(array(
                     &$obj,
@@ -216,7 +211,6 @@ class RouterNew extends Base
                 return;
             }
         }
-
         // not match to 404.
         static::error404();
     }
@@ -227,5 +221,24 @@ class RouterNew extends Base
     protected static function error404()
     {
         Response::setStatus(404);
+    }
+
+    /**
+     * Build Uri
+     *
+     * @param String $m Module模块
+     * @param String $c Controller控制器
+     * @param String $a Action动作
+     *
+     * @return string Uri
+     */
+    public static function buildUri($m = '', $c = 'Index', $a = 'index')
+    {
+        return '/' . $m . '/' . $c . '/' . $a . static::$_config['ext'];
+    }
+
+    public static function getCurUri()
+    {
+        return static::$uri;
     }
 }

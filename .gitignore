@@ -1,4 +1,7 @@
 /.idea
 /template_c
 /cache
-
+/upload
+/inc/online*
+/avatar.gif
+.gitignore

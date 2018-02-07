@@ -8,13 +8,22 @@
 
 namespace App\Controller;
 
+use Xiaotu\Http\Upload;
 use Xiaotu\Controller;
 
 class Api extends Controller
 {
-    public function getAction()
+    public function uploadAction()
     {
-        echo 'get';
-        test();
+        $config = array(
+            'type' => array('image'),
+            'size' => 1024 * 100,   // 100kb
+        );
+        Upload::init($config);
+        $files = Upload::upload();
+        if (!empty($files))
+        {
+            echo json_encode($files);
+        }
     }
 }

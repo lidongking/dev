@@ -11,16 +11,17 @@ namespace App\Module\Api\Controller;
 use Xiaotu\Controller;
 
 use App\Module\Api\Model\Joke as JokeModel;
+use Xiaotu\Http\Gpcs;
 use Xiaotu\Http\Response;
 
 class Joke extends Controller
 {
-    protected $joleModel;
+    protected $jokeModel;
 
     protected function __construct()
     {
         parent::__construct();
-        $this->joleModel = JokeModel::getInstance();
+        $this->jokeModel = JokeModel::getInstance();
     }
 
     public function indexAction()
@@ -28,11 +29,11 @@ class Joke extends Controller
         $this->display('api/index/index.html', array());
     }
 
-    public function getAction()
+    public function getAction($p)
     {
-        $p = $this->getParams('p') ? intval($this->getParams('p')) : 1;
-        $data = $this->joleModel->getPage($p);
-        $maxPage = $this->joleModel->getMaxPage();
+        $p = isset($p) ? intval($p) : (isset($_GET['p']) ? Gpcs::get('p') : 1);
+        $data = $this->jokeModel->getPage($p);
+        $maxPage = $this->jokeModel->getMaxPage();
         $retData = array(
             'status' => 'ok',
             'curPage' => $p,

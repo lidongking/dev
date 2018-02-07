@@ -63,4 +63,14 @@ class Gpcs extends Base
     {
         return $key ? isset($_COOKIE[$key]) ? $_COOKIE[$key] : null : $_COOKIE;
     }
+
+    public static function session($key = '')
+    {
+        return $key ? isset($_SESSION[$key]) ? $_SESSION[$key] : null : $_SESSION;
+    }
+
+    public static function files($key = '')
+    {
+        return $key ? isset($_FILES[$key]) ? $_FILES[$key] : null : $_FILES;
+    }
 }

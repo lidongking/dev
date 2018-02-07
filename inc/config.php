@@ -8,6 +8,8 @@
 
 // define('DEBUG', true);
 define('ROOT_PATH', dirname(__DIR__));
+// dictionary separator
+define('DS', '/');
 // 本地环境
 $localIp = '127.0.0.1';
 // 线上环境
@@ -21,6 +23,13 @@ $mysql = array(
         'pass' => 'cookies',
         'prefix' => 'jt_'
     ),
+    'jt_shop_sys' => array(
+        'host' => $localIp,
+        'port' => 3306,
+        'user' => 'Jelly',
+        'pass' => 'cookies',
+        'prefix' => ''
+    )
 );
 
 $redis = array(
@@ -35,15 +44,15 @@ $cache = array(
     'file' => array(
         'c1' => array(
             'salt' => 'A!@#*&^',
-            'dir' => dirname(__DIR__) . '/cache'
+            'dir' => dirname(__DIR__) . '/cache/c1'
         ),
         'c2' => array(
             'salt' => 'A!@#*&^',
-            'dir' => dirname(__DIR__) . '/cache'
+            'dir' => dirname(__DIR__) . '/cache/c2'
         ),
         'c3' => array(
             'salt' => 'A!@#*&^',
-            'dir' => dirname(__DIR__) . '/cache'
+            'dir' => dirname(__DIR__) . '/cache/c3'
         ),
     )
 );
@@ -59,13 +68,13 @@ $smarty = array(
 
 // 路由
 $router = array(
-    'ext' => 'html',
+    'ext' => '.html',       // Url后缀
     'namespace' => 'App',
     'moves' => array(
         'Home/test/a/aa/a/2133' => '/tz.php'
     ),
     'routers' => array(
-        'Home/test/a/aa/a/2133' => 'Api/get'
+        'Home/test/a/aa/a/2133' => 'Api/get',
     )
 );
 

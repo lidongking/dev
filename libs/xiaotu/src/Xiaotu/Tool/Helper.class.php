@@ -8,6 +8,8 @@
 
 namespace Xiaotu\Tool;
 
+use Xiaotu\Http\Gpcs;
+
 class Helper
 {
     /**
@@ -36,7 +38,6 @@ class Helper
     public static function convertEncoding($data, $to = 'GBK', $from = 'UTF-8')
     {
         $desData = array();
-
         if (is_string($data))
         {
             // 只有是string类型才会转换，防止过多转换，例如：number,bool等
@@ -67,7 +68,7 @@ class Helper
      * @param bool $urlEncoded 是否urlEncode
      * @return null|string|string[] 结果
      */
-    public static function removeInvisibleCharacters($str, $urlEncoded = TRUE)
+    public static function removeInvisibleCharacters($str, $urlEncoded = true)
     {
         $nonDisplayables = array();
         // every control character except newline (dec 10)
@@ -80,9 +81,36 @@ class Helper
         $nonDisplayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S'; // 00-08, 11, 12, 14-31, 127
         do
         {
-            $str = preg_replace($nonDisplayables, '', $str, -1, $count);
+            $str = preg_replace($nonDisplayables, '', $str, - 1, $count);
         }
         while ($count);
+
         return $str;
+    }
+
+    public static function getClientIp()
+    {
+        //获取用户IP
+        $ip = '';
+        $params = array(
+            'HTTP_CLIENT_IP',
+            'HTTP_X_FORWARDED_FOR',
+            'HTTP_FROM',
+            'REMOTE_ADDR',
+        );
+        $servers = Gpcs::server();
+        foreach ($params as $v)
+        {
+            if (isset($servers[$v]))
+            {
+                if (!preg_match('/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/', $servers[$v]))
+                {
+                    continue;
+                }
+                $ip = $servers[$v];
+            }
+        }
+
+        return $ip;
     }
 }
